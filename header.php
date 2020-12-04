@@ -1,10 +1,14 @@
+<link rel="stylesheet" href="css/bootstrap.min.css"/>
 <!DOCTYPE html>
 <html>
 <head>
 	<title>RAEST Web App</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style>
-	body {margin: 0;}
+	body {
+		margin: 0;
+	  font-family: Arial, Helvetica, sans-serif;
+	}
 	
 	ul.topnav {
 	  list-style-type: none;
@@ -18,6 +22,7 @@
 	
 	ul.topnav li a {
 	  display: block;
+	  font-family: Arial, Helvetica, sans-serif;
 	  color: white;
 	  text-align: center;
 	  padding: 14px 16px;
@@ -25,10 +30,6 @@
 	}
 	
 	ul.topnav li a:hover:not(.active) {background-color: #111;}
-	
-	ul.topnav li a.active {background-color: #4CAF50;}
-	
-	ul.topnav li.right {float: right;}
 	
 	@media screen and (max-width: 600px) {
 	  ul.topnav li.right, 
@@ -39,9 +40,9 @@
 <body>
 	
 <ul class="topnav">
-	<li><a class="active" href="camera.php">Camera Feed</a></li>
-	<li><a href="temperature.php">Temperature</a></li>
-	<li class="right"><a href="#about">About</a></li>
+	<li><a href="index.php">Dashboard</a></li>
+	<li><a href="camera.php">Camera Feed</a></li>
+	<li><a href="climate.php">Climate</a></li>
 </ul>
 
 </body>
