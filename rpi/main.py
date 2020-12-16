@@ -1,4 +1,7 @@
 # Importing libraries
+import datetime
+#from datetime import datetime
+from datetime import timedelta
 import RPi.GPIO as GPIO
 import serial
 import string
@@ -6,7 +9,7 @@ import time
 import led
 import keypad
 import dbComm
-from datetime import datetime
+import camera
 
 storedInput = ""
 password = "1234"
@@ -24,51 +27,133 @@ hInput = ""
 
 correctRFID = False
 correctPassword = False
-flag = False
+dataFlag = False
+
+now = datetime.datetime.now()
+currentMinute = now.strftime("%Y-%m-%d %H:%M:%S")
+lastMinute = currentMinute - datetime.timedelta(minutes=2)
 
 #Sets all leds to low
-led.turnOffAllLed()
+
 
 
 if __name__ == '__main__':
     # Serial connection with Arduino
-    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    #ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+    ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
     ser.flush()
 
     while True:
         line = ser.readline().decode('utf-8').rstrip()
-        #print(line)
-        
-        rfidInput = ""
+        print(line)
 
+        rfidInput = ""
         motionInput = ""
         
         if (rfid in line):
             rfidInput = line.replace(rfid, "")
             
+            # 10 seconds to input password
+            import time
+            t_end = time.time() + 10
+            while time.time() < t_end:
+                keypadVar = keypad.getKeypad()
+                
+                # If input is "*" then flush storedInput
+                if (keypadVar == "*"):
+                    storedInput = ""
+        
+                # Check if keypadVar contains one of the strings in number array
+                for x in number:
+                    if (keypadVar == x):
+                        led.blueBlink()
+                
+                    # Concatenate keypadVar into storedInput
+                    storedInput = storedInput + keypadVar
+                    print("Input: ", end = "")
+                    print(storedInput)
+                    if (len(storedInput) > 4):
+                        led.redBlink()
+                        storedInput = ""
+                        
+                # To enter password for login
+                if (keypadVar == "#"):
+                    if (len(storedInput) == 4):
+                        #correctPassword = dbComm.passwordAuth(storedInput)
+                        #correctLogin = dbComm.login(rfidInput, storedInput)
+                        if (correctPassword):
+                            led.greenBlink()
+                        else:
+                            led.redBlink()
+                        storedInput = ""
+                    else:
+                        storedInput = ""
+                        
+                # To enter password to deposit item to inventory
+                if (keypadVar == "A"):
+                    if (len(storedInput) == 4):
+                        
+                        if ():
+                            led.greenBlink()
+                        else:
+                            led.redBlink()
+                        storedInput = ""
+                    else:
+                        storedInput = ""
+                
+                # To enter password to withdraw item from inventory
+                if (keypadVar == "B"):
+                    if (len(storedInput) == 4):
+                        
+                        if ():
+                            led.greenBlink()
+                        else:
+                            led.redBlink()
+                        storedInput = ""
+                    else:
+                        storedInput = ""
+                        
             correctRFID = False
             correctRFID = dbComm.rfidAuth(rfidInput)
             if (correctRFID == True):
+                print("Correct rifd")
                 led.greenBlink()
+                
+                
             elif (correctRFID == False):
                 led.redBlink()
+                print("Incorrect rfid")
 
             #print(rfidInput)
         
         if (t in line):
             tInput = line.replace(t, "")
-            print("T: ", end = "")
-            print(tInput)
+            #print("T: ", end = "")
+            #print(tInput)
 		
         if (h in line):
             hInput = line.replace(h, "")
-            print("H: ", end = "")
-            print(hInput)
+            #print("H: ", end = "")
+            #print(hInput)
 		
         if (motion in line):
             motionInput = line.replace(motion, "")
-			
             #print(motionInput)
+            
+            minuteDifference = currentMinute - lastMinute
+            now = datetime.now()
+            currentMinute = now.strftime("%Y-%m-%d %H:%M:%S")
+            
+            if(motionInput == '1'):
+            
+                if(minuteDifference > datetime.timedelta(minutes=1)):
+                    camera.takePhoto()
+
+                    lastMinute = currentMinute
+                
+
+                
+            
         #*********************************************************
         
         # Send temperature and humidity data to database
@@ -79,17 +164,19 @@ if __name__ == '__main__':
         current_minute = int(current_minute)
         #print(current_minute)
         
-        if (flag == False):
+        if (dataFlag == False):
             if ((current_minute % 10) == 0):
                 #if (tInput != None and hInput != None):
                 #print(tInput, hInput, currentTime, end = " ")
                 dbComm.addData(tInput, hInput, current_time)
                 #tInput = ""
                 #hInput = ""
-                flag = True
+                
+                
+                dataFlag = True
                     
         if ((current_minute % 10) == 2):
-            flag = False
+            dataFlag = False
             
         
         # Get input from keypad
@@ -100,6 +187,8 @@ if __name__ == '__main__':
         # If input is "*" then flush storedInput
         if (keypadVar == "*"):
             storedInput = ""
+        
+        
         
         # Check if keypadVar contains one of the strings in number array
         for x in number:
@@ -130,3 +219,4 @@ if __name__ == '__main__':
                 led.redBlink()
                 storedInput = ""
         #**********************************************************
+        
