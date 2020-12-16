@@ -72,5 +72,5 @@ def getKeypad():
         return "D"
     GPIO.output(ROW[3], GPIO.LOW)
 
-#def passwordAuthenticator(s):
+
     
