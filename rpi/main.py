@@ -1,7 +1,6 @@
 # Importing libraries
-import datetime
-#from datetime import datetime
-from datetime import timedelta
+#import datetime
+from datetime import datetime, timedelta
 import RPi.GPIO as GPIO
 import serial
 import string
@@ -28,14 +27,15 @@ hInput = ""
 correctRFID = False
 correctPassword = False
 dataFlag = False
+motionFlag = False
 
-now = datetime.datetime.now()
-currentMinute = now.strftime("%Y-%m-%d %H:%M:%S")
-lastMinute = currentMinute - datetime.timedelta(minutes=2)
+now = datetime.now()
+currentMinute = datetime.now()
+lastMinute = datetime.now() - timedelta(minutes=2)
+
+start = time.time()
 
 #Sets all leds to low
-
-
 
 if __name__ == '__main__':
     # Serial connection with Arduino
@@ -54,9 +54,9 @@ if __name__ == '__main__':
             rfidInput = line.replace(rfid, "")
             
             # 10 seconds to input password
-            import time
-            t_end = time.time() + 10
-            while time.time() < t_end:
+            #t_end = time.time() + 10
+            #while time.time() < t_end:
+            for i in range(10):
                 keypadVar = keypad.getKeypad()
                 
                 # If input is "*" then flush storedInput
@@ -89,22 +89,10 @@ if __name__ == '__main__':
                     else:
                         storedInput = ""
                         
-                # To enter password to deposit item to inventory
+                # To enter password to withdraw item from inventory
                 if (keypadVar == "A"):
                     if (len(storedInput) == 4):
-                        
-                        if ():
-                            led.greenBlink()
-                        else:
-                            led.redBlink()
-                        storedInput = ""
-                    else:
-                        storedInput = ""
-                
-                # To enter password to withdraw item from inventory
-                if (keypadVar == "B"):
-                    if (len(storedInput) == 4):
-                        
+                        dbComm.withdrawItem(rfidInput, storedInput)
                         if ():
                             led.greenBlink()
                         else:
@@ -140,17 +128,21 @@ if __name__ == '__main__':
             motionInput = line.replace(motion, "")
             #print(motionInput)
             
-            minuteDifference = currentMinute - lastMinute
-            now = datetime.now()
-            currentMinute = now.strftime("%Y-%m-%d %H:%M:%S")
+            done = time.time()
+            elapsed = done - start
             
-            if(motionInput == '1'):
             
-                if(minuteDifference > datetime.timedelta(minutes=1)):
+            if (elapsed > 60):
+                motionFlag = False
+            
+            if (motionInput == '1'):
+                # If one minute has passed since the last motion input
+                if (motionFlag == False):
                     camera.takePhoto()
 
-                    lastMinute = currentMinute
-                
+                    start = done
+                    
+                    motionFlag = True
 
                 
             
