@@ -13,6 +13,10 @@
 
 // Variables
 
+// Test variable
+
+int uidLength;
+
 // Climate sensor variables
 const int DHT_PIN = 2;
 const int DHTTYPE = 11;
@@ -24,15 +28,15 @@ int humid;
 const int SS_PIN = 10;
 const int RST_PIN = 9;
 
-// Motion sensor variable
+// Motion sensor variables
 const int MOTION_PIN = 3;
 int MOTION_STATE = 0;
+String content= "";
 
 // Char string for 
 unsigned char rfid[8];
 
 // Objects
-
 DHT dht(DHT_PIN, DHTTYPE);
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
@@ -49,8 +53,6 @@ void setup() {
   // Setup for RFID reader
   SPI.begin();
   mfrc522.PCD_Init();
-  
-
 }
 
 void loop() {
@@ -60,73 +62,49 @@ void loop() {
 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
+  
+  
   // Read temperature as Celsius
   float t = dht.readTemperature();
-  
-  // Check if any reads failed and exit early (to try again).
-  if (isnan(h)){
-    
-  }
 
-  if (isnan(t)){
-    
-  }
+  // Printing temperature
+  Serial.print("t: ");
+  Serial.print(t);
+  Serial.println();
+
+  // Read humidity
+  float h = dht.readHumidity();
+
+  // Printing humidity
+  Serial.print("h: ");
+  Serial.print(h);
+  Serial.println();
 
   // Data from motion sensor
   MOTION_STATE = digitalRead(MOTION_PIN);
 
-  if (MOTION_STATE == 1)
-  {
-    //
-    
-  }
-
-  // Set rfid array to null
-  //for (byte i = 0; i < mfrc522.uid.size; ++i)
-  //{
-  //  rfid[i] = byte();
-  //}
-  
-  // Data from RFID reader
-  if (mfrc522.PICC_IsNewCardPresent())
-  {
-
-    if(mfrc522.PICC_ReadCardSerial())
-    {
-      for (byte i = 0; i < mfrc522.uid.size; ++i)
-      {
-        rfid[i] = mfrc522.uid.uidByte[i];
-        //Serial.print(mfrc522.uid.uidByte[i], HEX);
-        //Serial.print(" ");
-      }
-      //Serial.println();
-    }
-  }
-
-  // Printing through serial
-
-  // Printing RFID data
-  Serial.print("RFID: ");
-  for (byte i = 0; i < mfrc522.uid.size; ++i)
-  {
-   Serial.print(mfrc522.uid.uidByte[i], HEX);
-  }
-
-  // 
-  
-  Serial.println();
-
-  // Printing climate data
-  Serial.print("t: ");
-  Serial.print(t);
-  Serial.println();
-  Serial.print("h: ");
-  Serial.print(h);
-  Serial.println();
-  
   // Printing motion data
   Serial.print("Motion: ");
   Serial.print(MOTION_STATE);
+  Serial.println();
+
+  if ( ! mfrc522.PICC_IsNewCardPresent()) 
+  {
+    return;
+  }
+  // Select one of the cards
+  if ( ! mfrc522.PICC_ReadCardSerial()) 
+  {
+    return;
+  }
+
+  Serial.print("RFID: ");
+
+  // Print out RFID
+  for (byte i = 0; i < mfrc522.uid.size; i++)
+  {
+     Serial.print(mfrc522.uid.uidByte[i], HEX);
+     content.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
   Serial.println();
 }
