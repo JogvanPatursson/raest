@@ -6,8 +6,6 @@ from datetime import datetime
 # global camera object to be used several times
 camera = PiCamera()
 
-#if __name__ == '__main__':
-
 def takePhoto():
 
     now = datetime.now()
@@ -45,4 +43,3 @@ def takePhoto():
 # Circa 4.2 MB
 #camera.resolution = (3280, 2464)
 #camera.capture('3280x2464.jpg')
-
