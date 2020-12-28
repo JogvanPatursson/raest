@@ -8,12 +8,12 @@ import led
 import keypad
 import dbComm
 import camera
-from rfid import rfidClass
+import rfid
 
-rfid = "RFID: "
-motion = "Motion: "
-t = "t: "
-h = "h: "
+rfidStr = "RFID: "
+motionStr = "Motion: "
+tempStr = "t: "
+humidStr = "h: "
 
 tInput = ""
 hInput = ""
@@ -47,19 +47,20 @@ if __name__ == '__main__':
         ser.write(encodedString)
     
         
-        if (rfid in line):
-            rfidInput = line.replace(rfid, "")
-            print("RFID in line: ", rfidInput)
-            rfidClass().rfidHandler(rfidInput)
+        if (rfidStr in line):
+            rfidInput = line.replace(rfidStr, "")
+            led.blueBlink()
+            
+            rfid.rfidHandler(rfidInput)
         
-        if (t in line):
-            tInput = line.replace(t, "")
+        if (tempStr in line):
+            tInput = line.replace(tempStr, "")
 		
-        if (h in line):
-            hInput = line.replace(h, "")
+        if (humidStr in line):
+            hInput = line.replace(humidStr, "")
 		
-        if (motion in line):
-            motionInput = line.replace(motion, "")
+        if (motionStr in line):
+            motionInput = line.replace(motionStr, "")
             
             done = time.time()
             elapsed = done - start
@@ -82,23 +83,11 @@ if __name__ == '__main__':
         # Send temperature and humidity data to database
         now = datetime.now()
         current_minute = now.strftime("%M")
-        current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-        #print(current_time)
         current_minute = int(current_minute)
-        #print(current_minute)
         
         if (dataFlag == False):
             if ((current_minute % 10) == 0):
-                #if (tInput != None and hInput != None):
-                #print(tInput, hInput, currentTime, end = " ")
-                dbComm.addData(tInput, hInput, current_time)
-                #tInput = ""
-                #hInput = ""
-
-                
+                dbComm.addData(tInput, hInput)
                 dataFlag = True
-                    
         if ((current_minute % 10) == 2):
             dataFlag = False
-        #**********************************************************
-        
