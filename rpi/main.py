@@ -61,6 +61,7 @@ if __name__ == '__main__':
 		
         if (motionStr in line):
             motionInput = line.replace(motionStr, "")
+<<<<<<< HEAD
             
             done = time.time()
             elapsed = done - start
@@ -69,6 +70,16 @@ if __name__ == '__main__':
             if (elapsed > 60):
                 motionFlag = False
             
+=======
+            
+            done = time.time()
+            elapsed = done - start
+            
+            
+            if (elapsed > 60):
+                motionFlag = False
+            
+>>>>>>> e0e87e3fb5a09c5a940545a5b5bd70db1b909e4d
             if (motionInput == '1'):
                 # If one minute has passed since the last motion input
                 if (motionFlag == False):
@@ -91,5 +102,8 @@ if __name__ == '__main__':
                 dataFlag = True
         if ((current_minute % 10) == 2):
             dataFlag = False
+<<<<<<< HEAD
 
     
+=======
+>>>>>>> e0e87e3fb5a09c5a940545a5b5bd70db1b909e4d
