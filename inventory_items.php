@@ -1,10 +1,6 @@
 <?php
 include_once ('header.php');
-$servername = "localhost";
-$username = "root";
-$password = "raest";
-$dbname = "raest_db";
-
+include_once ('connect.php');
 ?>
 
 <!DOCTYPE html>
@@ -26,7 +22,6 @@ $dbname = "raest_db";
 	}
 	th {
 		valign: center;
-		height: 30;
 		font-size: 18px;
 	}
 
@@ -49,136 +44,79 @@ $dbname = "raest_db";
 	<div class="row">
 		<div class="col">
 			<table>
-				<h3 align="center">User1</h3>
+				<h3 align="center">Jógvan</h3>
 				<th>Item</th>
 				<th width="20%">Amount</th>
-				
-				<?php
-				// Create connection
-				$conn = new mysqli($servername, $username, $password, $dbname);
-				// Check connection
-				if ($conn->connect_error) {
-					die("Connection failed: " . $conn->connect_error);
-				}
-				
-				$sql = "SELECT clismate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC";
-				//$sql = "SELECT climate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC WHERE timestamp BETWEEN DATEADD(HOUR, 0, DATEDIFF(d, 0, GETDATE())) AND DATEADD(HOUR, 24, DATEDIFF(d, 0, GETDATE()))";
 
-				$result = $conn->query($sql);
-		
-				if ($result->num_rows > 0) {
-					// output data of each row
-					//while() {
-						while ($i < 24) {
-							$temp_mean = 0;
-							$temp_min = 1000;
-							$temp_max = -1000;
-							while ($j < 6) {
-								$row = $result->fetch_assoc();
-								// https://stackoverflow.com/questions/53001090/select-data-from-specific-time-frame-in-mysql-and-return-in-php-form
-								//$sql = "SELECT climate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC WHERE climate_time BETWEEN DATEADD(HOUR, ", $i, ", DATEDIFF(d, 0, GETDATE())) AND DATEADD(HOUR, ", $i + 1, ", DATEDIFF(d, 0, GETDATE()))";
-								//$result = $conn->query($sql);
-								
-								$temp_mean = $temp_mean + $row["temperature"];
-								if ($temp_min > $row["temperature"]) {
-									$temp_min = $row["temperature"];
-								}
-								if ($temp_max < $row["temperature"]) {
-									$temp_max = $row["temperature"];
-								}
-								
-								$j = $j + 1;
-							}
-							$temp_mean = $temp_mean / 6;
-							$j = 0;
+                <?php
 
-							echo "<tr>";
-							echo "<td>", $temp_mean, "</td>";
-							echo "<td>", $temp_min, "</td>";
-							echo "<td>", $temp_max, "</td>";
-							echo "<td>", $row["climate_time"], "</td>";
-							echo "</tr>";
-							
-							$i = $i + 1;
-						}
-					//}
-				}
-				
-				else {
-					echo "<tr><td align='center' colspan='3'>0 results</td></tr>";
-				}
-		
-				$conn->close();
-				?>
+                $sql = "SELECT DISTINCT item_type FROM transactions WHERE user_id = 1";
+                $result = $conn->query($sql);
+
+                if ($result->num_rows > 0) {
+                    // output data of each row
+
+                    while($row = $result->fetch_assoc()) {
+
+                        $item_type = $row['item_type'];
+
+                        // Count rows for transaction_type 'Deposit' and 'Withdraw'
+                        $rowCountDeposit = mysqli_num_rows($conn->query("SELECT * FROM transactions WHERE user_id = 1 AND transaction_type = 'Deposit' AND item_type = '$item_type'"));
+                        $rowCountWithdraw = mysqli_num_rows($conn->query("SELECT * FROM transactions WHERE user_id = 1 AND transaction_type = 'Withdraw' AND item_type = '$item_type'"));
+
+                        // Print data into table
+                        echo "<tr>";
+                        echo "<td>", $item_type, "</td>";
+                        echo "<td>", $rowCountDeposit - $rowCountWithdraw, "</td>";
+                        echo "</tr>";
+                    }
+                }
+                else {
+                    echo "<tr><td align='center' colspan='2'>0 results</td></tr>";
+                }
+
+                ?>
 			</table>
 		</div>
 		<div class="col">
 				<table>
-				<h3 align="center">User2</h3>
+				<h3 align="center">Sveinur</h3>
 				<th>Item</th>
 				<th width="20%">Amount</th>
-				
-				<?php
-				// Create connection
-				$conn = new mysqli($servername, $username, $password, $dbname);
-				// Check connection
-				if ($conn->connect_error) {
-					die("Connection failed: " . $conn->connect_error);
-				}
-				
-				$sql = "SELECT clismate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC";
-				//$sql = "SELECT climate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC WHERE timestamp BETWEEN DATEADD(HOUR, 0, DATEDIFF(d, 0, GETDATE())) AND DATEADD(HOUR, 24, DATEDIFF(d, 0, GETDATE()))";
 
-				$result = $conn->query($sql);
-		
-				if ($result->num_rows > 0) {
-					// output data of each row
-					while ($i < 24) {
-						$temp_mean = 0;
-						$temp_min = 1000;
-						$temp_max = -1000;
-						while ($j < 6) {
-							$row = $result->fetch_assoc();
-							// https://stackoverflow.com/questions/53001090/select-data-from-specific-time-frame-in-mysql-and-return-in-php-form
-							//$sql = "SELECT climate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC WHERE climate_time BETWEEN DATEADD(HOUR, ", $i, ", DATEDIFF(d, 0, GETDATE())) AND DATEADD(HOUR, ", $i + 1, ", DATEDIFF(d, 0, GETDATE()))";
-							//$result = $conn->query($sql);
-							
-							$temp_mean = $temp_mean + $row["temperature"];
-							if ($temp_min > $row["temperature"]) {
-								$temp_min = $row["temperature"];
-							}
-							if ($temp_max < $row["temperature"]) {
-								$temp_max = $row["temperature"];
-							}
-							
-							$j = $j + 1;
-						}
-						$temp_mean = $temp_mean / 6;
-						$j = 0;
+                    <?php
 
-						echo "<tr>";
-						echo "<td>", $temp_mean, "</td>";
-						echo "<td>", $temp_min, "</td>";
-						echo "<td>", $temp_max, "</td>";
-						echo "<td>", $row["climate_time"], "</td>";
-						echo "</tr>";
-						
-						$i = $i + 1;
-					}
-				}
-				
-				else {
-					echo "<tr><td align='center' colspan='3'>0 results</td></tr>";
-				}
-		
-				$conn->close();
-				?>
+                    $sql = "SELECT DISTINCT item_type FROM transactions WHERE user_id = 2";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        // output data of each row
+
+                        while($row = $result->fetch_assoc()) {
+
+                            $item_type = $row['item_type'];
+
+                            // Count rows for transaction_type 'Deposit' and 'Withdraw'
+                            $rowCountDeposit = mysqli_num_rows($conn->query("SELECT * FROM transactions WHERE user_id = 2 AND transaction_type = 'Deposit' AND item_type = '$item_type'"));
+                            $rowCountWithdraw = mysqli_num_rows($conn->query("SELECT * FROM transactions WHERE user_id = 2 AND transaction_type = 'Withdraw' AND item_type = '$item_type'"));
+
+                            // Print data into table
+                            echo "<tr>";
+                            echo "<td>", $item_type, "</td>";
+                            echo "<td>", $rowCountDeposit - $rowCountWithdraw, "</td>";
+                            echo "</tr>";
+                        }
+                    }
+                    else {
+                        echo "<tr><td align='center' colspan='2'>0 results</td></tr>";
+                    }
+
+                    $conn->close();
+                    ?>
 			</table>
 		</div>		
 	</div>
 </div>
-
-
 
 </body>
 </html>

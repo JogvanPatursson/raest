@@ -1,10 +1,6 @@
 <?php
 include_once ('header.php');
-$servername = "localhost";
-$username = "root";
-$password = "raest";
-$dbname = "raest_db";
-
+include_once ('connect.php');
 ?>
 
 <!DOCTYPE html>
@@ -38,22 +34,15 @@ $dbname = "raest_db";
 <div class="container" align="center">
 <a href="climate_analysis.php" class="button">Analysis</a>
 <a href="climate_raw.php" class="button">Raw</a>
-<!--<button class="button" type="button" style="width: 40%">Analysis</button>-->
-<!--<button class="button" type="button" style="width: 40%">Raw</button>-->
 </div>
 <div class="container">
 	<br>
 	<table>
-	<th>Temperature</th>
-	<th>Humidity</th>
+	<th>Temperature °C</th>
+	<th>Humidity %</th>
 	<th>Time</th>
 	<?php
-	// Create connection
-	$conn = new mysqli($servername, $username, $password, $dbname);
-	// Check connection
-	if ($conn->connect_error) {
-		die("Connection failed: " . $conn->connect_error);
-	}
+
 	
 	$sql = "SELECT climate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC";
 	$result = $conn->query($sql);
@@ -62,12 +51,12 @@ $dbname = "raest_db";
 		// output data of each row
 		while($row = $result->fetch_assoc()) {
 			echo "<tr>";
-			echo "<td>", $row["temperature"], "°", "</td>";
-			echo "<td>", $row["humidity"], "%", "</td>";
+			echo "<td>", $row["temperature"], "</td>";
+			echo "<td>", $row["humidity"], "</td>";
 			echo "<td>", $row["climate_time"], "</td>";
 			echo "</tr>";
 			}
-		} 
+		}
 	else {
 		echo "0 results";
 	}
@@ -76,6 +65,7 @@ $dbname = "raest_db";
 	?>
 </table>
 </div>
+<br>
 
 </body>
 </html>

@@ -1,9 +1,6 @@
 <?php
 	include_once ('header.php');
-	$servername = "localhost";
-	$username = "root";
-	$password = "raest";
-	$dbname = "raest_db";
+	include_once ('connect.php');
 ?>
 <!DOCTYPE html>
 <html>
@@ -37,12 +34,6 @@
 <body>
 <h1 align="center">Motion</h1>
 <?php
-	// Create Connection
-	$conn = new mysqli($servername, $username, $password, $dbname);
-	// Check Connection
-	if ($conn->connect_error) {
-		die("Connection failed: " . $conn->connect_error);
-	}
 	
 	// SQL statement
 	$sql = "SELECT motion_time FROM motion ORDER BY motion_time ASC";
