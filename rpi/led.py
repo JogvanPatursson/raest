@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
+
 BLUE_PIN = 24
 GREEN_PIN = 25
 RED_PIN = 8

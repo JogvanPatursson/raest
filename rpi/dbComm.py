@@ -3,8 +3,9 @@ from mysql.connector import Error
 from mysql.connector import errorcode
 from datetime import datetime
 
+
 #Stores measurement for temperature and humidity to database
-def addData(t, h, time):
+def addData(t, h):
     try:
         raestdb = mysql.connector.connect(
             host = "localhost",
@@ -12,55 +13,25 @@ def addData(t, h, time):
             password = "raest",
             database = "raest_db"
         )
+        
+        now = datetime.now()
+        current_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
         sqlStatement =  "INSERT INTO climate(temperature, humidity, climate_time) VALUES (%s, %s, %s)"
         myCursor = raestdb.cursor()
-        myCursor.execute(sqlStatement, (t, h, time))
+        myCursor.execute(sqlStatement, (t, h, current_time))
         raestdb.commit()
         raestdb.close()
         myCursor.close()
+        
+        return True
 
     except mysql.connector.Error as error:
         print("Error: ".format(error))
         
-# Retrieves measurements from database for temperature and humidity 
-def getData():
-    raestdb = mysql.connector.connect(
-        host = "localhost",
-        user = "raest",
-        password = "raest",
-        database = "raest_db"
-    )
-    
-    sqlStatement = "SELECT temperature FROM climate"
-    myCursor = raestdb.cursor()
-    myCursor.execute(sqlStatement)
-    
-    myResult = myCursor.fetchall()
-    
-    for row in myResult:
-        print("Temperature: ", end = "")
-        print(row)
-    
-    raestdb.close()
-    myCursor.close()
+        return False
 
-# 
-def addUser():
-    raestdb = mysql.connector.connect(
-        host = "localhost",
-        user = "raest",
-        password = "raest",
-        database = "raest_db"
-    )
-    
-    sqlStatement = "INSERT INTO user (user_name, password, rfid_key) VALUES ('TestName', '1234', '1B3A102C');"
-    myCursor = raestdb.cursor()
-    myCursor.execute(sqlStatement)
-    print("SQL statement executed")
-    raestdb.close()
-    myCursor.close()
-
+#
 def addMotion(m, time):
     raestdb = mysql.connector.connect(
         host = "localhost",
@@ -78,6 +49,7 @@ def addMotion(m, time):
 
 # Checks if rfid is stored in database
 def loginAuth(rfid, password):
+    print("loginAuth() called")
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -86,7 +58,7 @@ def loginAuth(rfid, password):
     )
     
     # Selecting the password column from the user table where rfid_key matches rfid input
-    sqlStatement = "SELECT rfid_key, password FROM user"
+    sqlStatement = "SELECT rfid_key, password, user_id FROM user"
     myCursor = raestdb.cursor()
     myCursor.execute(sqlStatement, rfid)
     myResult = myCursor.fetchall()
@@ -97,24 +69,46 @@ def loginAuth(rfid, password):
     for row in myResult:
         r = row[0].decode()
         p = row[1].decode()
+        u = row[2]
+        print("r: ", r)
+        print("p: ", p)
+        
+        print("rfid: ", rfid)
+        print("\n")
+        print("password: ", password)
         
         if (rfid == r):
-            if (password = p):
+            print("rfid == r")
+            if (password == p):
+                print("password == p")
+                addAccessLog(u)
                 return True
             else:
                 return False
-    # Traverse every row in column of rfid_key
-    #for row in myResult:
-        # Compare rfid with stored rfid_key in row
-    #if(myResultStr == password):
-        #print("Correct")
-        #return True
-    #else:
-        #print("False")
-        #return False
 
-# Checks if password is stored in database
-def inventoryAuth(rfid, password):
+def addAccessLog(user):
+    print("addAccessLog() called")
+    raestdb = mysql.connector.connect(
+        host = "localhost",
+        user = "raest",
+        password = "raest",
+        database = "raest_db"
+    )
+    
+    now = datetime.now()
+    time = now.strftime("%Y-%m-%d %H:%M:%S")
+    
+    sqlStatement = "INSERT INTO access(user_id, access_time) VALUES (%s, %s)"
+    myCursor = raestdb.cursor()
+    myCursor.execute(sqlStatement, (user, time))
+    raestdb.commit()
+    raestdb.close()
+    myCursor.close()
+    
+    return
+
+# Checks if password is stored in database and retrieve user for that password
+def inventoryAuth(rfid, password, trans_type):
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -123,7 +117,7 @@ def inventoryAuth(rfid, password):
     )
     
     # Selecting the rfid_key column from the user table
-    sqlStatement = "SELECT user_name, password FROM user"
+    sqlStatement = "SELECT user_id, password FROM user"
     myCursor = raestdb.cursor()
     myCursor.execute(sqlStatement)
     
@@ -131,15 +125,34 @@ def inventoryAuth(rfid, password):
     myResult = myCursor.fetchall()
     #myResult = myCursor.fetchone()[0].decode()
     
+    # Get user id by checking password in databases
     for row in myResult:
-        u = row[0].decode()
+        u = row[0]
         p = row[1].decode()
         if(p == password):
-            inventoryWithdraw(rfid, u)
-    
-    return False
+            inventoryTransaction(rfid, u, trans_type)
+            return True
 
-def inventoryWithdraw(rfid, user):
+# Withdraw item from inventory
+def inventoryTransaction(rfid, user_id, trans):
+    # Tag for item type, "Grindalykkja"
+    tag1 = "97F2BC2"
+    # Tag for item type, "Skerpikjot"
+    tag2 = "C91F19C2"
+    
+    item_type = ""
+    trans_type = ""
+    
+    if (rfid == tag1):
+        item_type = "Grindalykkja"
+    elif (rfid == tag2):
+        item_type = "Skerpikjot"
+        
+    if (trans == "A"):
+        trans_type = "withdraw"
+    elif (trans == "B"):
+        trans_type = "deposit"
+        
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -147,8 +160,20 @@ def inventoryWithdraw(rfid, user):
         database = "raest_db"
     )
     
+    # Create datetime
+    now = datetime.now()
+    currentTime = now.strftime("%Y-%m-%d %H:%M:%S")
     
-            
+    # Insert 
+    sqlStatement = "INSERT INTO transactions(item_id, user_id, item_type, trans_type, trans_date) VALUES(%s, %s, %s, %s, %s)"
+    myCursor = raestdb.cursor()
+    myCursor.execute(sqlStatement, (rfid, user_id, item_type, trans_type, currentTime))
+    raestdb.commit()
+    raestdb.close()
+    myCursor.close()
+    
+    return True
+    
 # Add photo name and timestamp to database
 def addPhoto(name, time):
     try:
@@ -167,11 +192,11 @@ def addPhoto(name, time):
         print(time)
         sqlStatement = "INSERT INTO motion (motion_name, motion_time) VALUES(%s, %s)"
         myCursor = raestdb.cursor()
-
         myCursor.execute(sqlStatement, (name, time))
         raestdb.commit()
         raestdb.close()
         myCursor.close()
+
 
     except mysql.connector.Error as error:
         print("Error: ".format(error))
