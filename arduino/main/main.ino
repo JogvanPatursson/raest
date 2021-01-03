@@ -1,4 +1,4 @@
-// Main Arduino Code
+// main.ino
 
 // Libraries
 
@@ -9,22 +9,15 @@
 // Library for DHT11 temperature and humidity sensor
 #include <DHT.h>
 
-// Library for motion sensor
-
-// Variables
-
-// Test variable
-
-int uidLength;
-
-// Climate sensor variables
+// Climate sensor constants
 const int DHT_PIN = 2;
 const int DHTTYPE = 11;
 
+// CLimate sensor variables
 int temp;
 int humid;
 
-// RFID reader sensor
+// RFID reader sensor pins
 const int SS_PIN = 10;
 const int RST_PIN = 9;
 
@@ -40,6 +33,7 @@ unsigned char rfid[8];
 DHT dht(DHT_PIN, DHTTYPE);
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
+// Setup
 void setup() {
   //Setting up serial connection and setting baud rate
   Serial.begin(9600);
@@ -55,14 +49,12 @@ void setup() {
   mfrc522.PCD_Init();
 }
 
+// Loop
 void loop() {
   // Data from temperature and humidity sensor
-    // Wait a few seconds between measurements.
-  delay(1000);
-
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  // Wait a few seconds between measurements.
   
+  delay(1000);
   
   // Read temperature as Celsius
   float t = dht.readTemperature();
@@ -88,6 +80,7 @@ void loop() {
   Serial.print(MOTION_STATE);
   Serial.println();
 
+  // Data from mfrc522 reader
   if ( ! mfrc522.PICC_IsNewCardPresent()) 
   {
     return;
