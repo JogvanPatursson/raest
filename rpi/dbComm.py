@@ -4,7 +4,6 @@ from mysql.connector import errorcode
 from datetime import datetime
 import led
 
-
 #Stores measurement for temperature and humidity to database
 def addData(t, h):
     try:
@@ -19,7 +18,7 @@ def addData(t, h):
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")
         
-        # 
+        # Insert values for temperature, humidity and timestamp to climate table in database
         sqlStatement =  "INSERT INTO climate(temperature, humidity, climate_time) VALUES (%s, %s, %s)"
         myCursor = raestdb.cursor()
         myCursor.execute(sqlStatement, (t, h, current_time))
@@ -30,23 +29,6 @@ def addData(t, h):
         # Error message if 
     except mysql.connector.Error as error:
         print("Error: ".format(error))
-
-# Add record of photo to database
-def addMotion(m, time):
-    # Connect to raest_db database
-    raestdb = mysql.connector.connect(
-        host = "localhost",
-        user = "raest",
-        password = "raest",
-        database = "raest_db"
-    )
-    
-    sqlStatement = "INSERT INTO motion (motion, time) VALUES (%s, %s)"
-    myCursor = raestdb.cursor()
-    myCursor.execute(sqlStatement, (m, time))
-    raestdb.commit()
-    raestdb.close()
-    myCursor.close()
 
 # Checks if rfid is stored in database, and if password is correct
 def loginAuth(rfid, password):
@@ -94,7 +76,7 @@ def addAccessLog(user):
     
     now = datetime.now()
     time = now.strftime("%Y-%m-%d %H:%M:%S")
-    
+    # Insert record of user and timestamp to access table in database
     sqlStatement = "INSERT INTO access(user_id, access_time) VALUES (%s, %s)"
     myCursor = raestdb.cursor()
     myCursor.execute(sqlStatement, (user, time))
@@ -114,7 +96,7 @@ def inventoryAuth(rfid, password, trans_type):
         database = "raest_db"
     )
     
-    # Selecting the rfid_key column from the user table
+    # Selecting the rfid_key column from the user table in database
     sqlStatement = "SELECT user_id, password FROM user"
     myCursor = raestdb.cursor()
     myCursor.execute(sqlStatement)
@@ -163,7 +145,7 @@ def inventoryTransaction(rfid, user_id, trans):
     now = datetime.now()
     currentTime = now.strftime("%Y-%m-%d %H:%M:%S")
     
-    # Insert record of withdrawal or deposit to database
+    # Insert record of withdrawal or deposit to transaction table in database
     sqlStatement = "INSERT INTO transactions(item_id, user_id, item_type, trans_type, trans_date) VALUES(%s, %s, %s, %s, %s)"
     myCursor = raestdb.cursor()
     myCursor.execute(sqlStatement, (rfid, user_id, item_type, trans_type, currentTime))
@@ -182,9 +164,7 @@ def addPhoto(time):
             password = "raest",
             database = "raest_db"
         )
-
-        print("Time:")
-        print(time)
+        # Insert record of timestamp to motion table in database
         sqlStatement = "INSERT INTO motion(motion_time) VALUES(%s)"
         myCursor = raestdb.cursor()
         myCursor.execute(sqlStatement, (time,))
