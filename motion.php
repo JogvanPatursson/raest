@@ -40,7 +40,7 @@
 	$result = $conn->query($sql);
 	
 	// Conatiner Begin
-	echo "<div class='container-fluid'>";
+	echo "<div class='container-fluid' style='width: 80%'>";
 	
 	// Check if table has data
 	if ($result->num_rows > 0) {
@@ -57,7 +57,7 @@
 			echo "<div class='col'>";
 			
 			// Content
-			echo "<img src='", $row["motion_time"], ".png'>";
+			echo "<img src='rpi/", $row["motion_time"], ".jpg'>";
 			echo "<p align='center'>", $row["motion_time"], "</p>";
 			
 			// Col End
@@ -74,7 +74,7 @@
 		}
 	}
 	else {
-		echo "0 results";
+		echo "<div align='center'>0 results</div>";
 	}
 	// Container End
 	echo "</div>";

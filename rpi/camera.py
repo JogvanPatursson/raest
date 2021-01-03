@@ -18,7 +18,7 @@ def takePhoto():
     camera.capture(currentTimeString + extensionString)
 
     # Call function to save photo timestamp and location to database
-    dbComm.addPhoto(currentTimeString, currentTime)
+    dbComm.addPhoto(currentTimeString)
     
 # Circa 66 KB
 #camera.resolution = (400, 225)

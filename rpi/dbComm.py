@@ -133,7 +133,7 @@ def inventoryAuth(rfid, password, trans_type):
             inventoryTransaction(rfid, u, trans_type)
             return True
 
-# Withdraw item from inventory
+# Withdraw and deposit item from inventory
 def inventoryTransaction(rfid, user_id, trans):
     # Tag for item type, "Grindalykkja"
     tag1 = "97F2BC2"
@@ -175,7 +175,7 @@ def inventoryTransaction(rfid, user_id, trans):
     return True
     
 # Add photo name and timestamp to database
-def addPhoto(name, time):
+def addPhoto(time):
     try:
         raestdb = mysql.connector.connect(
             host = "localhost",
@@ -183,16 +183,12 @@ def addPhoto(name, time):
             password = "raest",
             database = "raest_db"
         )
-        #time = '2020-12-04 12:30:45'
-        #name = "jogvan"
 
-        print("Name; ")
-        print(name)
-        print("time: ")
+        print("Time:")
         print(time)
-        sqlStatement = "INSERT INTO motion (motion_name, motion_time) VALUES(%s, %s)"
+        sqlStatement = "INSERT INTO motion(motion_time) VALUES(%s)"
         myCursor = raestdb.cursor()
-        myCursor.execute(sqlStatement, (name, time))
+        myCursor.execute(sqlStatement, (time,))
         raestdb.commit()
         raestdb.close()
         myCursor.close()

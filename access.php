@@ -28,39 +28,28 @@ include_once ('connect.php');
 
 	</style>
 </head>
-
 <body>
 	
-<h1 align="center">Climate</h1>
-
-<!-- Container for nav buttons -->
-<div class="container" align="center">
-<a href="climate_analysis.php" class="button">Analysis</a>
-<a href="climate_raw.php" class="button">Raw</a>
-</div>
-
-<!-- Container for table -->
+<h1 align="center">Access</h1>
 <div class="container">
 	<br>
 	<table>
-	<th>Temperature °C</th>
-	<th>Humidity %</th>
-	<th>Time</th>
+	<th>User</th>
+	<th>Access Time</th>
 	<?php
-
-	// SQL Statement + Query
-	$sql = "SELECT climate_id, temperature, humidity, climate_time FROM climate ORDER BY climate_time DESC";
+	
+	// SQL query
+	$sql = "SELECT user_name, access_time FROM access JOIN user ON access.user_id = user.user_id ORDER BY access_time DESC";
 	$result = $conn->query($sql);
 
-	// Check if table is not empty
+	// Check if database table is empty
 	if ($result->num_rows > 0) {
 		
-		// Output data of each row in a table
+		// Output data of each row in table
 		while($row = $result->fetch_assoc()) {
 			echo "<tr>";
-			echo "<td>", $row["temperature"], "</td>";
-			echo "<td>", $row["humidity"], "</td>";
-			echo "<td>", $row["climate_time"], "</td>";
+			echo "<td>", $row["user_name"], "</td>";
+			echo "<td>", $row["access_time"], "</td>";
 			echo "</tr>";
 			}
 		}

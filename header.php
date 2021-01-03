@@ -4,6 +4,8 @@
 <head>
 	<title>RAEST Web App</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<!-- Some custom stylesheet for the Web App -->
 	<style>
 	body {
 		margin: 0;
@@ -23,6 +25,8 @@
 	ul.topnav li a {
 		display: block;
 		font-family: Arial, Helvetica, sans-serif;
+		font-size: 20px;
+		text-shadow: 2px 2px black;
 		color: white;
 		text-align: center;
 		padding: 14px 16px;
@@ -55,12 +59,12 @@
 	</style>
 </head>
 <body>
-	
+
+<!-- Nav bar links -->
 <ul class="topnav">
-	<li><a href="index.php">Dashboard</a></li>
-	<li><a href="camera.php">Camera Feed</a></li>
 	<li><a href="climate_analysis.php">Climate</a></li>
 	<li><a href="inventory_items.php">Inventory</a></li>
+	<li><a href="access.php">Access</a></li>
 	<li><a href="motion.php">Motion</a></li>
 </ul>
 
