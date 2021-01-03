@@ -1,3 +1,6 @@
+# camera.py
+
+# Libraries
 import time
 import dbComm
 from picamera import PiCamera
