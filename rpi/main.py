@@ -74,8 +74,6 @@ if __name__ == '__main__':
                     camera.takePhoto()
                     start = done
                     motionFlag = True
-
-        #*********************************************************
         
         # Get current minute
         now = datetime.now()
