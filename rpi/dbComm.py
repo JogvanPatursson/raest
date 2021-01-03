@@ -86,8 +86,6 @@ def addAccessLog(user):
     raestdb.commit()
     raestdb.close()
     myCursor.close()
-    
-    return
 
 # Checks if password is stored in database and retrieve user for that password
 def inventoryAuth(rfid, password, trans_type):
@@ -113,9 +111,11 @@ def inventoryAuth(rfid, password, trans_type):
         u = row[0]
         p = row[1].decode()
         if(p == password):
+            led.greenBlink
             inventoryTransaction(rfid, u, trans_type)
-            return True
-
+        else:
+            led.redBlink()
+            
 # Withdraw and deposit item from inventory
 def inventoryTransaction(rfid, user_id, trans):
     # Tag for item type, "Grindalykkja"
@@ -160,8 +160,6 @@ def inventoryTransaction(rfid, user_id, trans):
     raestdb.commit()
     raestdb.close()
     myCursor.close()
-    
-    return True
     
 # Add photo timestamp to database
 def addPhoto(time):
