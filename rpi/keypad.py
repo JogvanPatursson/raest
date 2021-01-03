@@ -4,9 +4,7 @@ import time
 import string
 import led
 
-returnVal = ""
-
-# Defining matrix variables for gpio pins
+# Pin numbers for rows and columns of keypad
 ROW = [2, 3, 4, 17]
 COL = [14, 15, 18, 23]
 
@@ -23,10 +21,11 @@ for i in range(4):
 for j in range(4):
     GPIO.setup(COL[j], GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 
+# Returns user selected key
 def getKeypad():
-    returnVal = ""
+    # Sleep for 0.3 seconds to avoid multiple 
     time.sleep(0.3)
-    #First row
+    # Sets first row to high. Checks if any column on that row is has an input. Then sets row to low.
     GPIO.output(ROW[0], GPIO.HIGH)
     if(GPIO.input(COL[0]) == 1):
         return "1"
@@ -37,7 +36,7 @@ def getKeypad():
     if(GPIO.input(COL[3]) == 1):
         return "A"
     GPIO.output(ROW[0], GPIO.LOW)
-    #Second row
+    # Sets second row to high. Checks if any column on that row is has an input. Then sets row to low.
     GPIO.output(ROW[1], GPIO.HIGH)
     if(GPIO.input(COL[0]) == 1):
         return "4"
@@ -48,7 +47,7 @@ def getKeypad():
     if(GPIO.input(COL[3]) == 1):
         return "B"
     GPIO.output(ROW[1], GPIO.LOW)
-    #Third row
+    # Sets third row to high. Checks if any column on that row is has an input. Then sets row to low.
     GPIO.output(ROW[2], GPIO.HIGH)
     if(GPIO.input(COL[0]) == 1):
         return "7"
@@ -59,7 +58,7 @@ def getKeypad():
     if(GPIO.input(COL[3]) == 1):
         return "C"
     GPIO.output(ROW[2], GPIO.LOW)
-    #Fourth row
+    # Sets fourth row to high. Checks if any column on that row is has an input. Then sets row to low.
     GPIO.output(ROW[3], GPIO.HIGH)
     if(GPIO.input(COL[0]) == 1):
         return "*"
@@ -70,6 +69,3 @@ def getKeypad():
     if(GPIO.input(COL[3]) == 1):
         return "D"
     GPIO.output(ROW[3], GPIO.LOW)
-
-
-    
