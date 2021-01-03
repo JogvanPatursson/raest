@@ -1,14 +1,21 @@
+# rfid.py
+
+# Libraries
 import led
 import dbComm
 import keypad
 import time
 
+# Function to determine what to do with rfid input
 def rfidHandler(rfidInput):
+    # String variables for input
     storedInput = ""
     keypadVar = ""
+    # Int variables for counting time
     rfidStart = 0
     rfidEnd = 0
     rfidElapsed = 0
+    # Array of string values the user can choose
     number = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     success = False
 
@@ -31,8 +38,6 @@ def rfidHandler(rfidInput):
         
                 # Concatenate keypadVar into storedInput
                 storedInput = storedInput + keypadVar
-                print("Input: ", end = "")
-                print(storedInput)
             
             # If user inputs more than 4 numbers, return false
             if (len(storedInput) > 4):
