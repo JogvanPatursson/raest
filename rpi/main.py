@@ -1,4 +1,6 @@
-# Importing libraries
+# main.py
+
+# Libraries
 from datetime import datetime
 import RPi.GPIO as GPIO
 import serial
@@ -22,10 +24,6 @@ hInput = ""
 rfidInput = ""
 motionInput = ""
 
-correctRFID = False
-correctPassword = False
-
-rfidFlag = False
 dataFlag = False
 motionFlag = False
 
@@ -66,18 +64,15 @@ if __name__ == '__main__':
             
             done = time.time()
             elapsed = done - start
-            
-            
+	    # If more than 60 seconds have passed since last time motionFlag was set to true
             if (elapsed > 60):
                 motionFlag = False
             
             if (motionInput == '1'):
-                # If one minute has passed since the last motion input
+                # Call takePhoto() function, and set motionFlag to true
                 if (motionFlag == False):
                     camera.takePhoto()
-
                     start = done
-                    
                     motionFlag = True
 
         #*********************************************************
