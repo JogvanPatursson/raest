@@ -10,11 +10,13 @@ import dbComm
 import camera
 import rfid
 
+# String variables for recognizing different data types
 rfidStr = "RFID: "
 motionStr = "Motion: "
 tempStr = "t: "
 humidStr = "h: "
 
+# String variables for input
 tInput = ""
 hInput = ""
 rfidInput = ""
@@ -27,14 +29,15 @@ rfidFlag = False
 dataFlag = False
 motionFlag = False
 
+# 
 start = time.time()
 
 #Sets all leds to low
 led.turnOffAllLed()
 
+# Main function
 if __name__ == '__main__':
     # Serial connection with Arduino
-    #ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
     ser.flush()
 
