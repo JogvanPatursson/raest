@@ -1,3 +1,6 @@
+# dbComm.py
+
+# Libraries
 import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
@@ -120,16 +123,21 @@ def inventoryTransaction(rfid, user_id, trans):
     # Tag for item type, "Skerpikjot"
     tag2 = "C91F19C2"
     
+    # String variables for 
     item_type = ""
     trans_type = ""
     
+    # If rfid is tag1 the item type is "Grindalykkja"
     if (rfid == tag1):
         item_type = "Grindalykkja"
+    # If rfid is tag2 the item type is "Skerpikjot"
     elif (rfid == tag2):
         item_type = "Skerpikjot"
         
+    # If user chose "A" the transaction type is "withdraw"
     if (trans == "A"):
         trans_type = "withdraw"
+    # If user chose "B" the transaction type is "deposit"
     elif (trans == "B"):
         trans_type = "deposit"
         
@@ -157,22 +165,18 @@ def inventoryTransaction(rfid, user_id, trans):
     
 # Add photo timestamp to database
 def addPhoto(time):
-    try:
-        raestdb = mysql.connector.connect(
-            host = "localhost",
-            user = "raest",
-            password = "raest",
-            database = "raest_db"
-        )
-        # Insert record of timestamp to motion table in database
-        sqlStatement = "INSERT INTO motion(motion_time) VALUES(%s)"
-        myCursor = raestdb.cursor()
-        myCursor.execute(sqlStatement, (time,))
-        raestdb.commit()
-        raestdb.close()
-        myCursor.close()
-
-
-    except mysql.connector.Error as error:
-        print("Error: ".format(error))
-
+    # Connect to raest_db database
+    raestdb = mysql.connector.connect(
+        host = "localhost",
+        user = "raest",
+        password = "raest",
+        database = "raest_db"
+    )
+    
+    # Insert record of timestamp to motion table in database
+    sqlStatement = "INSERT INTO motion(motion_time) VALUES(%s)"
+    myCursor = raestdb.cursor()
+    myCursor.execute(sqlStatement, (time,))
+    raestdb.commit()
+    raestdb.close()
+    myCursor.close()
