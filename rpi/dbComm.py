@@ -2,21 +2,24 @@ import mysql.connector
 from mysql.connector import Error
 from mysql.connector import errorcode
 from datetime import datetime
+import led
 
 
 #Stores measurement for temperature and humidity to database
 def addData(t, h):
     try:
+        # Connect to raest_db database
         raestdb = mysql.connector.connect(
             host = "localhost",
             user = "raest",
             password = "raest",
             database = "raest_db"
         )
-        
+        # Get current timestamp
         now = datetime.now()
         current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-
+        
+        # 
         sqlStatement =  "INSERT INTO climate(temperature, humidity, climate_time) VALUES (%s, %s, %s)"
         myCursor = raestdb.cursor()
         myCursor.execute(sqlStatement, (t, h, current_time))
@@ -24,15 +27,13 @@ def addData(t, h):
         raestdb.close()
         myCursor.close()
         
-        return True
-
+        # Error message if 
     except mysql.connector.Error as error:
         print("Error: ".format(error))
-        
-        return False
 
-#
+# Add record of photo to database
 def addMotion(m, time):
+    # Connect to raest_db database
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -47,9 +48,9 @@ def addMotion(m, time):
     raestdb.close()
     myCursor.close()
 
-# Checks if rfid is stored in database
+# Checks if rfid is stored in database, and if password is correct
 def loginAuth(rfid, password):
-    print("loginAuth() called")
+    # Connect to raest_db database
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -70,24 +71,20 @@ def loginAuth(rfid, password):
         r = row[0].decode()
         p = row[1].decode()
         u = row[2]
-        print("r: ", r)
-        print("p: ", p)
-        
-        print("rfid: ", rfid)
-        print("\n")
-        print("password: ", password)
-        
+        # If rfid from user matches rfid from database
         if (rfid == r):
-            print("rfid == r")
+            # If password from user matches password from database 
             if (password == p):
-                print("password == p")
+                # Green LED blinks
+                led.greenBlink()
+                # Add record of access to database
                 addAccessLog(u)
-                return True
             else:
-                return False
-
+                # Red LED blinks
+                led.redBlink()
+# 
 def addAccessLog(user):
-    print("addAccessLog() called")
+    # Connect to raest_db database
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -109,6 +106,7 @@ def addAccessLog(user):
 
 # Checks if password is stored in database and retrieve user for that password
 def inventoryAuth(rfid, password, trans_type):
+    # Connect to raest_db database
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -153,6 +151,7 @@ def inventoryTransaction(rfid, user_id, trans):
     elif (trans == "B"):
         trans_type = "deposit"
         
+    # Connect to raest_db database
     raestdb = mysql.connector.connect(
         host = "localhost",
         user = "raest",
@@ -164,7 +163,7 @@ def inventoryTransaction(rfid, user_id, trans):
     now = datetime.now()
     currentTime = now.strftime("%Y-%m-%d %H:%M:%S")
     
-    # Insert 
+    # Insert record of withdrawal or deposit to database
     sqlStatement = "INSERT INTO transactions(item_id, user_id, item_type, trans_type, trans_date) VALUES(%s, %s, %s, %s, %s)"
     myCursor = raestdb.cursor()
     myCursor.execute(sqlStatement, (rfid, user_id, item_type, trans_type, currentTime))
@@ -174,7 +173,7 @@ def inventoryTransaction(rfid, user_id, trans):
     
     return True
     
-# Add photo name and timestamp to database
+# Add photo timestamp to database
 def addPhoto(time):
     try:
         raestdb = mysql.connector.connect(
