@@ -1,12 +1,3 @@
-<!--
-	REFERENCES
-	https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=crud-data-table-for-database-with-modal-form
-	https://www.tutorialrepublic.com/php-tutorial/php-mysql-crud-application.php
-	https://stackoverflow.com/questions/32172519/how-do-i-pass-the-id-of-a-row-from-my-database-to-a-modal-dialog
-	https://www.sourcecodester.com/php/11629/phpmysqli-crud-operation-bootstrapmodal.html
-	https://www.plus2net.com/php_tutorial/chart-line-database.php
--->
-
 <?php
 include_once ('header.php');
 include_once ('connect.php');
