@@ -33,9 +33,11 @@ include_once ('connect.php');
 <h1 align="center">Access</h1>
 <div class="container">
 	<br>
+	<!-- Print table -->
 	<table>
 	<th>User</th>
 	<th>Access Time</th>
+	
 	<?php
 	
 	// SQL query
