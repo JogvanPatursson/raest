@@ -1,14 +1,3 @@
-<!--
-	REFERENCES
-	https://canvasjs.com/docs/charts/chart-types/html5-line-chart/
-	https://stackoverflow.com/questions/17718107/how-do-i-subtract-24-hour-from-date-time-object-in-php/17718174
-	https://stackoverflow.com/questions/53001090/select-data-from-specific-time-frame-in-mysql-and-return-in-php-form
-	https://www.tutorialspoint.com/how-to-select-all-records-that-are-10-minutes-within-current-timestamp-in-mysql
-	https://popsql.com/learn-sql/mysql/how-to-query-date-and-time-in-mysql
-	https://canvasjs.com/docs/charts/how-to/render-multiple-charts-in-a-page/
-
--->
-
 <?php
 include_once ('header.php');
 include_once ('connect.php');
